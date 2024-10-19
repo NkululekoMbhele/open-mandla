@@ -2,14 +2,20 @@ import os
 import subprocess
 import time
 import psycopg2
-from psycopg2 import sql
 
+from psycopg2 import sql
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+#  docker compose -f local-setup/docker-compose.yaml build app  
 # Configuration
-POSTGRES_CONTAINER_NAME = 'mm_pdb'
-POSTGRES_PASSWORD = 'root'  # Change this to a strong password
-POSTGRES_USER = 'root'
-POSTGRES_DB = 'mm_ops_db'
-POSTGRES_PORT = '5433'
+POSTGRES_CONTAINER_NAME = os.getenv('POSTGRES_CONTAINER_NAME')
+POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
+POSTGRES_USER = os.getenv('POSTGRES_USER')
+POSTGRES_DB = os.getenv('POSTGRES_DB')
+POSTGRES_PORT = os.getenv('POSTGRES_PORT')
 SQL_DIR = './src/db/scripts/'  # Directory where the SQL files are located
 TABLE_TXN_FILE = 'TABLE_TXN.sql'  # SQL file for transactions table schema
 TABLE_BALANCES_FILE = 'TABLE_BALANCES.sql'  # SQL file for user balances table schema
