@@ -125,3 +125,6 @@ ehthumbs_vista.db
 # Temporary files
 *.swp
 *.swo
+
+# Secrets files
+.env
