@@ -68,5 +68,114 @@ export class PaymentController {
     }
   }
 
+  async revokeGrant(req: Request, res: Response): Promise<void> {
+    try {
+      const { accessToken, url } = req.body;
+      const result = await this.paymentService.revokeGrant(accessToken, url);
+      res.json(result);
+    } catch (error) {
+      console.error("Error revoking grant:", error);
+      res.status(500).json({ error: "Failed to revoke grant" });
+    }
+  }
 
+  async createIncomingPayment(req: Request, res: Response): Promise<void> {
+    try {
+      const { accessToken, incomingAmount, expiresIn } = req.body;
+      const incomingPayment = await this.paymentService.createIncomingPayment(accessToken, incomingAmount, expiresIn);
+      res.json(incomingPayment);
+    } catch (error) {
+      console.error("Error creating incoming payment:", error);
+      res.status(500).json({ error: "Failed to create incoming payment" });
+    }
+  }
+
+  async listIncomingPayments(req: Request, res: Response): Promise<void> {
+    try {
+      const { accessToken } = req.body;
+      const { first, last, cursor } = req.query;
+
+      const paginationParams = {
+        first: first ? parseInt(first as string) : undefined,
+        last: last ? parseInt(last as string) : undefined,
+        cursor: cursor as string | undefined
+      };
+
+      const incomingPayments = await this.paymentService.listIncomingPayments(accessToken, paginationParams);
+      res.json(incomingPayments);
+    } catch (error) {
+      console.error("Error listing incoming payments:", error);
+      res.status(500).json({ error: "Failed to list incoming payments" });
+    }
+  }
+
+
+  async getIncomingPayment(req: Request, res: Response): Promise<void> {
+    try {
+      const { incomingPaymentUrl } = req.params;
+      const { accessToken } = req.body;
+
+      const incomingPayment = await this.paymentService.getIncomingPayment(incomingPaymentUrl, accessToken);
+      res.json(incomingPayment);
+    } catch (error) {
+      console.error("Error getting incoming payment:", error);
+      res.status(500).json({ error: "Failed to get incoming payment" });
+    }
+  }
+
+  async completeIncomingPayment(req: Request, res: Response): Promise<void> {
+    try {
+      const { incomingPaymentUrl } = req.params;
+      const { accessToken } = req.body;
+
+      const completedIncomingPayment = await this.paymentService.completeIncomingPayment(incomingPaymentUrl, accessToken);
+      res.json(completedIncomingPayment);
+    } catch (error) {
+      console.error("Error completing incoming payment:", error);
+      res.status(500).json({ error: "Failed to complete incoming payment" });
+    }
+  }
+
+  async createOutgoingPayment(req: Request, res: Response): Promise<void> {
+    try {
+      const { accessToken, quoteId } = req.body;
+      const outgoingPayment = await this.paymentService.createOutgoingPayment(accessToken, quoteId);
+      res.json({ outgoingPaymentUrl: outgoingPayment.id });
+    } catch (error) {
+      console.error("Error creating outgoing payment:", error);
+      res.status(500).json({ error: "Failed to create outgoing payment" });
+    }
+  }
+
+  async listOutgoingPayments(req: Request, res: Response): Promise<void> {
+    try {
+      const { accessToken } = req.body;
+      const { first, last, cursor } = req.query;
+
+      const paginationParams = {
+        first: first ? parseInt(first as string) : undefined,
+        last: last ? parseInt(last as string) : undefined,
+        cursor: cursor as string | undefined
+      };
+
+      const outgoingPayments = await this.paymentService.listOutgoingPayments(accessToken, paginationParams);
+      res.json(outgoingPayments);
+    } catch (error) {
+      console.error("Error listing outgoing payments:", error);
+      res.status(500).json({ error: "Failed to list outgoing payments" });
+    }
+  }
+
+  async getOutgoingPayment(req: Request, res: Response): Promise<void> {
+    try {
+      const { outgoingPaymentUrl } = req.params;
+      const { accessToken } = req.body;
+
+      const outgoingPayment = await this.paymentService.getOutgoingPayment(outgoingPaymentUrl, accessToken);
+      res.json(outgoingPayment);
+    } catch (error) {
+      console.error("Error getting outgoing payment:", error);
+      res.status(500).json({ error: "Failed to get outgoing payment" });
+    }
+  }
 }
