@@ -6,6 +6,8 @@ jspm_packages/
 # TypeScript output directory
 dist/
 
+.idea
+
 # Logs
 logs
 *.log
