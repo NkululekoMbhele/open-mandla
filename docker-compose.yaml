@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  pgdb:
+    container_name: mm_pdb
+    networks:
+      - mm_network
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: mm_ops_db
+    ports:
+      - "5433:5432"
+  pgadmin:
+    container_name: mm_pga4
+    networks:
+      - mm_network
+    depends_on:
+      pgdb:
+        condition:
+          service_started
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5051:80"
+
+networks:
+  mm_network:
