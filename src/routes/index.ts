@@ -5,8 +5,11 @@ import paymentRoutes from "./paymentRoutes";
 
 const router = express.Router();
 
+
+const app = express();
+
 router.use('/', homeRoutes);
 router.use('/test', testRoutes);
-router.use('/open', paymentRoutes);
+router.use('/api/payment', paymentRoutes);
 
 export default router;
