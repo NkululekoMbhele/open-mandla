@@ -1,5 +1,5 @@
 import parsePhoneNumberFromString, { isValidNumber } from 'libphonenumber-js';
-import { postgresDB } from '../db';
+import { insertAssetsForUser, postgresDB } from '../db';
 import { userDataTable } from '../db/schema/users';
 
 // Example function to check if a phone number is valid
@@ -12,7 +12,7 @@ export function generate8DigitKey() {
     // Generate a random number between 10000000 and 99999999 (inclusive)
     return Math.floor(10000000 + Math.random() * 90000000);
 }
-  
+
 
 export async function createUser(phoneNumber: string) {
     // Parse the phone number to extract the country ISO code
@@ -25,13 +25,13 @@ export async function createUser(phoneNumber: string) {
     // Get the 3-letter country ISO code (e.g., 'ZA' for South Africa)
     const countryISO = phoneNumberParsed.country;
 
-    const userId = generate8DigitKey();
+    const userId = `${generate8DigitKey()}`;
 
     if (!countryISO) return;
 
     // Insert the user into the database using Drizzle ORM
     await postgresDB.insert(userDataTable).values({
-      user_id: `${userId}`,
+      user_id: userId,
       phone_number: phoneNumber,
     //   user_name: "",
       country: countryISO,  // Extracted from phone number
@@ -43,10 +43,6 @@ export async function createUser(phoneNumber: string) {
     return userId
 }
 
-
-function insertAssetsForUser(userId: number) {
-    throw new Error('Function not implemented.');
-}
 // export handleBalanceCommand = async (phoneNumber: string) => {
 //     const user = await postgresDB
 //     .select()

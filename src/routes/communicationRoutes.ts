@@ -13,8 +13,8 @@ router.get('/sms', (req, res) => {
 
 router.post('/sms', async (req, res) => {
     console.log(`Recieved Body: ${JSON.stringify(req.body)}`);
-    const from = req.body.From;
-    const command = req.body.Body;
+    const from: string = req.body.From;
+    const command: string = req.body.Body;
 
     const numberValid = checkPhoneNumberValidity(from);
     console.log("Is Valid Number:", numberValid);
@@ -23,12 +23,14 @@ router.post('/sms', async (req, res) => {
         return;
     }
 
+    console.log("Checking if user exists:", from);
     const { exists, userId } = await checkIfUserExists(from);
     console.log("Does User Exist:", exists);
     if (!exists || !userId){
         res.send("User does not exist.");
-        const userId = createUser(from);
-        sendSms(from, 'Hello Mandla User. We see your are new to the ecosystem. Welcome. Your user id is: ' + userId + '. To get started, try command BALANCE to check your balance.');
+        const userId = await createUser(from);
+        console.log("Created User:", userId);
+        sendSms(from, 'Hello Mandla User. We see your are new to the ecosystem. Welcome. Your Open Mandla User ID is: ' + userId + '. To get started, try command BALANCE to check your balance.');
         return;
     }
 

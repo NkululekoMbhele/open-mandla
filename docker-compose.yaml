@@ -3,7 +3,7 @@ services:
   pgdb:
     container_name: mm_pdb
     networks:
-      - mm_network
+      - mmo_nw
     image: postgres
     restart: always
     environment:
@@ -15,7 +15,7 @@ services:
   pgadmin:
     container_name: mm_pga4
     networks:
-      - mm_network
+      - mmo_nw
     depends_on:
       pgdb:
         condition:
@@ -29,4 +29,4 @@ services:
       - "5051:80"
 
 networks:
-  mm_network:
+  mmo_nw:

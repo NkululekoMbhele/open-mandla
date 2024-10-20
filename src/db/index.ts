@@ -11,7 +11,7 @@ export const postgresDB = drizzle(DATABASE_URL);
 
 export async function checkIfUserExists(number: string) {
     const user = await postgresDB.select().from(userDataTable).where(eq(userDataTable.phone_number, number)).limit(1);
-  
+    console.log("Monate", user)
     return { exists: user.length > 0, userId: user.length > 0 ? user[0].user_id : null};  // Returns true if the user exists, false otherwise
 }
 
