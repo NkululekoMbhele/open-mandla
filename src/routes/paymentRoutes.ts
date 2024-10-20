@@ -28,6 +28,7 @@ router.get('/wallet/keys', (req, res) => paymentController.getWalletKeys(req, re
 router.post('/grants/incoming-payment', (req, res) => paymentController.requestIncomingPaymentGrant(req, res));
 router.post('/grants/quote', (req, res) => paymentController.requestQuoteGrant(req, res));
 router.post('/grants/outgoing-payment', (req, res) => paymentController.requestOutgoingPaymentGrant(req, res));
+router.get('/grants/redirect', (req, res) => paymentController.outgoingPaymentGrantRedirect(req, res));
 router.post('/grants/continue', (req, res) => paymentController.continueGrant(req, res));
 router.post('/grants/revoke', (req, res) => paymentController.revokeGrant(req, res));
 

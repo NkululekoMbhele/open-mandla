@@ -1,5 +1,3 @@
-// src/core/payment/PaymentController.ts
-
 import { Request, Response } from 'express';
 import { PaymentService } from './PaymentService';
 
@@ -56,6 +54,21 @@ export class PaymentController {
       res.status(500).json({ error: "Failed to request outgoing payment grant" });
     }
   }
+
+  async outgoingPaymentGrantRedirect(req: Request, res: Response): Promise<void> {
+    try {
+      console.log(req.params.interact_ref)
+      console.log(req.params.hash)
+      console.log(req.params)
+      console.log(req)
+      res.json({"message": "Test Redirect"});
+    } catch (error) {
+      console.error("Error requesting outgoing payment grant:", error);
+      res.status(500).json({ error: "Failed to request outgoing payment grant" });
+    }
+  }
+
+
 
   async continueGrant(req: Request, res: Response): Promise<void> {
     try {

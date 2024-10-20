@@ -136,7 +136,7 @@ export class PaymentService {
           start: ["redirect"],
           finish: {
             method: "redirect",
-            uri: "http://localhost:3344",
+            uri: "http://localhost:3000/api/payment/grants/redirect",
             nonce,
           },
         },
