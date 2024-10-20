@@ -28,12 +28,12 @@ TABLE_BALANCES_FILE = 'TABLE_BALANCES.sql'  # SQL file for user balances table s
 TABLE_USERS_FILE = 'TABLE_USERS.sql'  # SQL file for user balances table schema
 TABLE_SESSION = 'TABLE_SESSION.sql'  # SQL file for user balances table schema
 QUERY_DEFAULT_USER = f"""
-    INSERT INTO users (user_id, phone_number, user_name, country)
+    INSERT INTO user_details (user_id, phone_number, user_name, country)
     VALUES ('12345', '{TWILIO_PHONE_NUMBER}', 'Account Admin', 'ZA');
 """
 
 QUERY_DEFAULT_BALANCE = """
-    INSERT INTO users (user_id, asset, amount)
+    INSERT INTO user_balances (user_id, asset, amount)
     VALUES ('12345', '{ASSET}', 0.0);
 """
 
@@ -51,7 +51,7 @@ docker_run_command = [
 ]
 
 # Wait time to ensure the container is fully started
-WAIT_TIME = 30//2
+WAIT_TIME = 30//4
 
 def start_postgres_container():
     """Start a PostgreSQL container using Docker."""
@@ -70,6 +70,11 @@ def execute_sql_script(cursor, file_path):
         sql_script = f.read()
         cursor.execute(sql_script)
         print(f"Executed SQL script: {file_path}")
+
+def execute_sql_string(cursor, sql_string):
+    """Execute an SQL script to create schema in PostgreSQL."""
+    cursor.execute(sql_string)
+    print(f"Executed SQL script: {sql_string}")
 
 def create_schemas():
     """Create the schemas using the SQL files."""
@@ -92,9 +97,9 @@ def create_schemas():
         execute_sql_script(cursor, os.path.join(SQL_DIR, TABLE_BALANCES_FILE))
         execute_sql_script(cursor, os.path.join(SQL_DIR, TABLE_USERS_FILE))
         execute_sql_script(cursor, os.path.join(SQL_DIR, TABLE_SESSION))
-        execute_sql_script(cursor, QUERY_DEFAULT_USER)
-        for asset in ASSETS:
-            execute_sql_script(cursor, QUERY_DEFAULT_BALANCE.format(ASSET=asset))
+        execute_sql_string(cursor, QUERY_DEFAULT_USER)
+        for asset in ASSETS.split(","):
+            execute_sql_string(cursor, QUERY_DEFAULT_BALANCE.format(ASSET=asset))
 
 
         # Commit the changes

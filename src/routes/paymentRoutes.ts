@@ -42,5 +42,9 @@ router.post('/outgoing-payments', (req, res) => paymentController.createOutgoing
 router.get('/outgoing-payments', (req, res) => paymentController.listOutgoingPayments(req, res));
 router.get('/outgoing-payments/:outgoingPaymentUrl', (req, res) => paymentController.getOutgoingPayment(req, res));
 
+// Quotes
+router.post('/quotes', (req, res) => paymentController.createQuote(req, res));
+router.get('/quotes/:quoteUrl', (req, res) => paymentController.getQuote(req, res));
+
 
 export default router;

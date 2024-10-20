@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "c79453c4-bef3-42e7-9d6c-eb38951a4e46",
+		"_postman_id": "3e8aff41-f387-4793-8fb4-4abceba3d352",
 		"name": "Open Mandla",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "21735397"
@@ -184,7 +184,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"walletAddress\": \"your_wallet_address_here\",\n  \"debitAmount\": \"100.00\",\n  \"receiveAmount\": \"95.00\",\n  \"nonce\": \"uniqueRandomString123\"\n}",
+							"raw": "{\n  \"walletAddress\": \"https://ilp.interledger-test.dev/7aee0ae4\",\n \"debitAmount\": {\n            \"value\": \"1000\",\n            \"assetCode\": \"EUR\",\n            \"assetScale\": 2\n          },\n  \"receiveAmount\":  {\n            \"value\": \"1000\",\n            \"assetCode\": \"EUR\",\n            \"assetScale\": 2\n          },\n  \"nonce\": \"NONCE\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -215,7 +215,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"continueAccessToken\": \"continue_token_from_step_1\",\n  \"continueUri\": \"continue_uri_from_step_1\",\n  \"interactRef\": \"simulated_interaction_reference\"\n}",
+							"raw": "{\n  \"continueAccessToken\": \"DD92A321CB4FDD31B1CB\",\n  \"continueUri\": \"https://auth.interledger-test.dev/continue/930c593a-a971-4c70-add3-792b86310c4d\",\n  \"interactRef\": \"d237e633-bfa6-4cb6-b2e0-f9de7b68e24c\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -240,13 +240,99 @@
 					"response": []
 				},
 				{
+					"name": "Incoming Grant",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"walletAddress\": \"https://ilp.interledger-test.dev/7aee0ae4\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/payment/grants/incoming-payment",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"payment",
+								"grants",
+								"incoming-payment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Incoming Payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"accessToken\": \"000E61F663FE1FF0A255\",\r\n  \"incomingAmount\": {\r\n    \"value\": \"400\",\r\n    \"assetCode\": \"EUR\",\r\n    \"assetScale\": 2\r\n  },\r\n  \"expiresIn\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/payment/incoming-payments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"payment",
+								"incoming-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Quote Grants",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/payment/grants/quote",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"payment",
+								"grants",
+								"quote"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Create a Quote",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"accessToken\": \"{{accessToken}}\",\n  \"walletAddress\": \"your_wallet_address_here\",\n  \"receiveAmount\": {\n    \"value\": \"9500\",\n    \"assetCode\": \"USD\",\n    \"assetScale\": 2\n  },\n  \"receiver\": \"https://wallet.example/alice\"\n}",
+							"raw": "{\n  \"accessToken\": \"BD3EBD1B546AFEE6B09B\",\n  \"walletAddress\": \"https://ilp.interledger-test.dev/7aee0ae4\",\n  \"receiveAmount\": {\n    \"value\": \"1000\",\n    \"assetCode\": \"EUR\",\n    \"assetScale\": 2\n  },\n  \"receiver\": \"https://ilp.interledger-test.dev/incoming-payments/036b45ca-c8e1-4ceb-8803-1473ef31a09f\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -276,7 +362,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"accessToken\": \"{{accessToken}}\",\n  \"walletAddress\": \"your_wallet_address_here\",\n  \"quoteId\": \"quote_url_from_step_3\"\n}",
+							"raw": "{\n  \"accessToken\": \"5986E36C962B9503ACD9\",\n  \"walletAddress\": \"https://ilp.interledger-test.dev/7aee0ae4\",\n  \"quoteId\": \"https://ilp.interledger-test.dev/quotes/a005c507-e5d1-45ef-8d1b-63849c9d6f22\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -304,15 +390,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"accessToken\": \"{{accessToken}}\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
 							"raw": "http://localhost:3000/api/payment/outgoing-payments/{outgoing_payment_url_from_step_4}",
 							"protocol": "http",
@@ -335,15 +412,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"accessToken\": \"{{accessToken}}\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
 							"raw": "http://localhost:3000/api/payment/outgoing-payments?first=10",
 							"protocol": "http",
@@ -416,28 +484,6 @@
 						"payment",
 						"grants",
 						"outgoing-payment"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Quote Grants",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:3000/api/payment/grants/quote",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3000",
-					"path": [
-						"api",
-						"payment",
-						"grants",
-						"quote"
 					]
 				}
 			},

@@ -19,7 +19,7 @@ export class PaymentService {
     private privateKey: string,
     private keyId: string
   ) {
-    this.cache = new NodeCache({ stdTTL: 600 }); // Cache for 10 minutes
+    this.cache = new NodeCache({stdTTL: 600}); // Cache for 10 minutes
   }
 
   private async initializeClient(): Promise<AuthenticatedClient> {
@@ -34,11 +34,24 @@ export class PaymentService {
     return this.client;
   }
 
-  async getWalletAddress(): Promise<{   id: string;   publicName?: string | undefined;   assetCode: string;   assetScale: number;   authServer: string;   resourceServer: string; } & {   [key: string]: unknown; }> {
+  async getWalletAddress(): Promise<{
+    id: string;
+    publicName?: string | undefined;
+    assetCode: string;
+    assetScale: number;
+    authServer: string;
+    resourceServer: string;
+  } & { [key: string]: unknown; }> {
 
     const client = await this.initializeClient();
-    console.log(client)
-    const walletAddress: {   id: string;   publicName?: string | undefined;   assetCode: string;   assetScale: number;   authServer: string;   resourceServer: string; } & {   [key: string]: unknown; } = await client.walletAddress.get({
+    const walletAddress: {
+      id: string;
+      publicName?: string | undefined;
+      assetCode: string;
+      assetScale: number;
+      authServer: string;
+      resourceServer: string;
+    } & { [key: string]: unknown; } = await client.walletAddress.get({
       url: this.walletAddressUrl,
     });
     this.cache.set('walletAddress', walletAddress);
@@ -51,12 +64,13 @@ export class PaymentService {
       url: this.walletAddressUrl,
     });
   }
+
   async requestIncomingPaymentGrant() {
     const client = await this.initializeClient();
     const walletAddress = await this.getWalletAddress();
 
     const grant = await client.grant.request(
-      { url: walletAddress.authServer },
+      {url: walletAddress.authServer},
       {
         access_token: {
           access: [
@@ -84,7 +98,7 @@ export class PaymentService {
     const walletAddress = await this.getWalletAddress();
 
     const grant = await client.grant.request(
-      { url: walletAddress.authServer },
+      {url: walletAddress.authServer},
       {
         access_token: {
           access: [
@@ -107,12 +121,23 @@ export class PaymentService {
     };
   }
 
-  async requestOutgoingPaymentGrant(debitAmount: string, receiveAmount: string, nonce: string) {
+  async requestOutgoingPaymentGrant(debitAmount: {
+    value: string;
+    assetCode: string;
+    assetScale: number;
+  }, receiveAmount: { value: string; assetCode: string; assetScale: number; }, nonce: string) {
     const client = await this.initializeClient();
-    const walletAddress: {   id: string;   publicName?: string | undefined;   assetCode: string;   assetScale: number;   authServer: string;   resourceServer: string; } & {   [key: string]: unknown; } = await this.getWalletAddress();
+    const walletAddress: {
+      id: string;
+      publicName?: string | undefined;
+      assetCode: string;
+      assetScale: number;
+      authServer: string;
+      resourceServer: string;
+    } & { [key: string]: unknown; } = await this.getWalletAddress();
 
     const grant = await client.grant.request(
-      { url: walletAddress.authServer },
+      {url: walletAddress.authServer},
       {
         access_token: {
           access: [
@@ -121,11 +146,8 @@ export class PaymentService {
               type: "outgoing-payment",
               actions: ["list", "list-all", "read", "read-all", "create"],
               limits: {
-                "debitAmount": {
-                  "value": "500",
-                  "assetCode": "USD",
-                  "assetScale": 2
-                }
+                debitAmount: debitAmount,
+                receiveAmount: receiveAmount,
               },
             },
           ],
@@ -184,7 +206,7 @@ export class PaymentService {
     });
 
     // If the cancellation is successful, the above call won't throw an error
-    return { message: "Grant successfully revoked" };
+    return {message: "Grant successfully revoked"};
   }
 
   async createIncomingPayment(accessToken: string, incomingAmount: {
@@ -228,6 +250,7 @@ export class PaymentService {
 
     return incomingPayments;
   }
+
   async getIncomingPayment(incomingPaymentUrl: string, accessToken: string) {
     const client = await this.initializeClient();
 
@@ -287,4 +310,35 @@ export class PaymentService {
     });
   }
 
+  async createQuote(accessToken: string, incomingPaymentUrl: string) {
+    const client = await this.initializeClient();
+    try {
+
+      const quote = await client.quote.create(
+        {
+          url: new URL(this.walletAddressUrl).origin,
+          accessToken: accessToken,
+        },
+        {
+          method: "ilp",
+          walletAddress: this.walletAddressUrl,
+          receiver: incomingPaymentUrl
+        }
+      );
+      return quote;
+    } catch (error) {
+      console.error(error);
+    }
+
+    throw new Error("Error creating quote");
+  }
+
+  async getQuote(quoteUrl: string, accessToken: string) {
+    const client = await this.initializeClient();
+    const quote = await client.quote.get({
+      url: quoteUrl,
+      accessToken: accessToken,
+    });
+    return quote;
+  }
 }

@@ -2,6 +2,7 @@ import express from 'express';
 import { sendSms } from '../communication/providers/SMSProvider';
 import { checkIfUserExists } from '../db';
 import { checkPhoneNumberValidity, createUser } from '../utils/phoneNumber';
+import { handleBalanceCommand } from '../communication/utils';
 
 const router = express.Router();
 
@@ -12,8 +13,8 @@ router.get('/sms', (req, res) => {
 
 router.post('/sms', async (req, res) => {
     console.log(`Recieved Body: ${JSON.stringify(req.body)}`);
-    const from = req.body.From;
-    const command = req.body.Body;
+    const from: string = req.body.From;
+    const command: string = req.body.Body;
 
     const numberValid = checkPhoneNumberValidity(from);
     console.log("Is Valid Number:", numberValid);
@@ -22,12 +23,14 @@ router.post('/sms', async (req, res) => {
         return;
     }
 
-    const userExists = await checkIfUserExists(from);
-    console.log("Does User Exist:", userExists);
-    if (!userExists){
+    console.log("Checking if user exists:", from);
+    const { exists, userId } = await checkIfUserExists(from);
+    console.log("Does User Exist:", exists);
+    if (!exists || !userId){
         res.send("User does not exist.");
-        const userId = createUser(from);
-        sendSms(from, 'Hello Mandla User. We see your are new to the ecosystem. Welcome. Your user id is: ' + userId + '. To get started, try command BALANCE to check your balance.');
+        const userId = await createUser(from);
+        console.log("Created User:", userId);
+        sendSms(from, 'Hello Mandla User. We see your are new to the ecosystem. Welcome. Your Open Mandla User ID is: ' + userId + '. To get started, try command BALANCE to check your balance.');
         return;
     }
 
@@ -40,7 +43,8 @@ router.post('/sms', async (req, res) => {
     // Handle the command
     switch (cmd) {
         case 'balance':
-        //handleBalanceCommand();
+        const message = await handleBalanceCommand(userId);
+        sendSms(from, message)
         break;
   
         case 'verify':
@@ -54,10 +58,15 @@ router.post('/sms', async (req, res) => {
                 sendSms(from, 'Insufficient parameters for sending assets, follow the format: send#ACCOUNT#ASSET#AMOUNT.');
             }
 
-        const [destAccount, asset, amount] = commandParts.slice(1);
-        // handleSendCommand(destAccount, asset, amount);
-        break;
-  
+
+        case 'help':
+            if (commandParts.length === 1) {
+                sendSms(from, 'What specific command would you like help with?\n - Help Balance\n - Help Send');
+            }
+
+            // handleSendCommand(destAccount, asset, amount);
+            break;
+    
         default:
             // return res.status(400).json({ error: 'Unknown command' });
             break

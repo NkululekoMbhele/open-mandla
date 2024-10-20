@@ -191,4 +191,30 @@ export class PaymentController {
       res.status(500).json({ error: "Failed to get outgoing payment" });
     }
   }
+
+
+  async createQuote(req: Request, res: Response) {
+    console.log("Creating quote:", req.body);
+    try {
+      const { accessToken, receiver } = req.body;
+      console.log("Inside Start Haaa")
+      const quote = await this.paymentService.createQuote(accessToken, receiver);
+      console.log("Done Haaa")
+      res.status(201).json({ quoteUrl: quote.id });
+      console.log("Done 2")
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to create quote' });
+    }
+  }
+
+  async getQuote(req: Request, res: Response) {
+    try {
+      const { quoteUrl } = req.params;
+      const { accessToken } = req.body;
+      const quote = await this.paymentService.getQuote(quoteUrl, accessToken);
+      res.status(200).json(quote);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get quote' });
+    }
+  }
 }
