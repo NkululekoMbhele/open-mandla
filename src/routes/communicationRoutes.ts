@@ -2,7 +2,7 @@ import express from 'express';
 import { sendSms } from '../communication/providers/SMSProvider';
 import { checkIfUserExists } from '../db';
 import { checkPhoneNumberValidity, createUser } from '../utils/phoneNumber';
-import { handleBalanceCommand, sendTransactionHistory } from '../communication/utils';
+import { handleBalanceCommand, handleSendCommand, sendTransactionHistory } from '../communication/utils';
 
 const router = express.Router();
 
@@ -58,6 +58,10 @@ router.post('/sms', async (req, res) => {
                 sendSms(from, 'Insufficient parameters for sending assets, follow the format: send#ACCOUNT#ASSET#AMOUNT.');
             }
 
+            const [destAccount, asset, amount] = commandParts.slice(1);
+            // const message = await handleSendCommand(userId, destAccount, asset, parseInt(amount));
+            // sendSms(from, message)
+
         case 'help':
             if (commandParts.length === 1) {
                 sendSms(from, 'What specific command would you like help with?\n - Help Balance\n - Help Send');
@@ -69,22 +73,18 @@ router.post('/sms', async (req, res) => {
         case 'history':
             if (commandParts.length < 3) {
                 sendSms(from, 'Inomplete command for viewing transaction history, follow the format: history#YEAR#MONTH (e.g. history#2024#02) or history#YEAR#MONTH#PAGE (e.g. history#2024#02).');
-                return;
             }
 
-            
             if (commandParts.length === 3) {
                 const [ year, month ] = commandParts.slice(1);
                 const txnHistory = await sendTransactionHistory(userId, year, month);
                 sendSms(from, txnHistory);
-                return
             }
 
             if (commandParts.length === 4) {
                 const [ year, month, page ] = commandParts.slice(1);
                 const txnHistory = await sendTransactionHistory(userId, year, month, parseInt(page));
                 sendSms(from, txnHistory);
-                return
             }
 
             // handleSendCommand(destAccount, asset, amount);
