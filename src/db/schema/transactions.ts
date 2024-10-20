@@ -10,5 +10,5 @@ export const transactionsTable = pgTable('transactions', {
     amount: decimal('amount', { precision: 20, scale: 6 }).notNull(),
     txn_type: varchar('txn_type', { length: 100 }).notNull(),
     txn_id: varchar('txn_id', { length: 255 }).notNull().unique(),
-    datetime: timestamp('datetime').defaultNow(),
+    datetime: timestamp('datetime').notNull().defaultNow(),
 });

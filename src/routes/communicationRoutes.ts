@@ -2,10 +2,10 @@ import express from 'express';
 import { sendSms } from '../communication/providers/SMSProvider';
 import { checkIfUserExists } from '../db';
 import { checkPhoneNumberValidity, createUser } from '../utils/phoneNumber';
-import { handleBalanceCommand } from '../communication/utils';
 import dotenv from "dotenv";
 import {PaymentService} from "../core/payment/PaymentService";
 import {OutgoingPaymentManager} from "../core/payment/OutgoingPaymentManager";
+import { handleBalanceCommand, handleSendCommand, sendTransactionHistory } from '../communication/utils';
 
 const router = express.Router();
 
@@ -81,6 +81,26 @@ router.post('/sms', async (req, res) => {
         case 'help':
             if (commandParts.length === 1) {
                 sendSms(from, 'What specific command would you like help with?\n - Help Balance\n - Help Send');
+            }
+
+            // handleSendCommand(destAccount, asset, amount);
+            break;
+
+        case 'history':
+            if (commandParts.length < 3) {
+                sendSms(from, 'Inomplete command for viewing transaction history, follow the format: history#YEAR#MONTH (e.g. history#2024#02) or history#YEAR#MONTH#PAGE (e.g. history#2024#02).');
+            }
+
+            if (commandParts.length === 3) {
+                const [ year, month ] = commandParts.slice(1);
+                const txnHistory = await sendTransactionHistory(userId, year, month);
+                sendSms(from, txnHistory);
+            }
+
+            if (commandParts.length === 4) {
+                const [ year, month, page ] = commandParts.slice(1);
+                const txnHistory = await sendTransactionHistory(userId, year, month, parseInt(page));
+                sendSms(from, txnHistory);
             }
 
             // handleSendCommand(destAccount, asset, amount);
