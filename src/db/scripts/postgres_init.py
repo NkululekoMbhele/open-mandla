@@ -16,10 +16,26 @@ POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
 POSTGRES_USER = os.getenv('POSTGRES_USER')
 POSTGRES_DB = os.getenv('POSTGRES_DB')
 POSTGRES_PORT = os.getenv('POSTGRES_PORT')
+POSTGRES_PORT = os.getenv('POSTGRES_PORT')
+
+TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
+ASSETS = os.getenv('ASSETS')
+
+
 SQL_DIR = './src/db/scripts/'  # Directory where the SQL files are located
 TABLE_TXN_FILE = 'TABLE_TXN.sql'  # SQL file for transactions table schema
 TABLE_BALANCES_FILE = 'TABLE_BALANCES.sql'  # SQL file for user balances table schema
 TABLE_USERS_FILE = 'TABLE_USERS.sql'  # SQL file for user balances table schema
+TABLE_SESSION = 'TABLE_SESSION.sql'  # SQL file for user balances table schema
+QUERY_DEFAULT_USER = f"""
+    INSERT INTO users (user_id, phone_number, user_name, country)
+    VALUES ('12345', '{TWILIO_PHONE_NUMBER}', 'Account Admin', 'ZA');
+"""
+
+QUERY_DEFAULT_BALANCE = """
+    INSERT INTO users (user_id, asset, amount)
+    VALUES ('12345', '{ASSET}', 0.0);
+"""
 
 # Docker command to run PostgreSQL container
 docker_run_command = [
@@ -75,6 +91,11 @@ def create_schemas():
         execute_sql_script(cursor, os.path.join(SQL_DIR, TABLE_TXN_FILE))
         execute_sql_script(cursor, os.path.join(SQL_DIR, TABLE_BALANCES_FILE))
         execute_sql_script(cursor, os.path.join(SQL_DIR, TABLE_USERS_FILE))
+        execute_sql_script(cursor, os.path.join(SQL_DIR, TABLE_SESSION))
+        execute_sql_script(cursor, QUERY_DEFAULT_USER)
+        for asset in ASSETS:
+            execute_sql_script(cursor, QUERY_DEFAULT_BALANCE.format(ASSET=asset))
+
 
         # Commit the changes
         conn.commit()
