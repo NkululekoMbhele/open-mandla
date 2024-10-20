@@ -7,22 +7,21 @@ export class OutgoingPaymentManager {
   constructor(private paymentService: PaymentService) {}
 
   async initiateOutgoingPayment(
-    walletAddress: string,
     debitAmount: { value: string; assetCode: string; assetScale: number },
     receiveAmount: { value: string; assetCode: string; assetScale: number },
     nonce: string
   ): Promise<PaymentSession> {
     // Step 1: Request Outgoing Payment Grant
     const grant = await this.paymentService.requestOutgoingPaymentGrant(
-      walletAddress,
       debitAmount,
       receiveAmount,
       nonce
     );
+    const walletAddress = await this.paymentService.getWalletAddress();
 
     // Store session
     const newSession: NewPaymentSession = {
-      userId: walletAddress, // Using wallet address as user ID for now
+      userId: walletAddress.id, // Using wallet address as user ID for now
       accessToken: grant.continueToken,
       tokenExpiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes from now
       paymentStatus: 'GRANT_REQUESTED',
@@ -59,7 +58,6 @@ export class OutgoingPaymentManager {
 
   async createQuote(
     sessionId: number,
-    receiveAmount: { value: string; assetCode: string; assetScale: number },
     receiver: string
   ): Promise<any> {
     const session = await postgresDB.select().from(paymentSessions).where(eq(paymentSessions.id, sessionId)).limit(1);
@@ -68,8 +66,6 @@ export class OutgoingPaymentManager {
     // Step 3: Create a Quote
     const quote = await this.paymentService.createQuote(
       session[0].accessToken,
-      session[0].userId, // wallet address
-      receiveAmount,
       receiver
     );
 
@@ -92,8 +88,7 @@ export class OutgoingPaymentManager {
     // Step 4: Create Outgoing Payment
     const outgoingPayment = await this.paymentService.createOutgoingPayment(
       session[0].accessToken,
-      session[0].userId, // wallet address
-      session[0].paymentUrl! // quote ID
+      session[0].quoteId as string // quote ID
     );
 
     // Update session
@@ -118,12 +113,10 @@ export class OutgoingPaymentManager {
 
   async listOutgoingPayments(walletAddress: string, first: number = 10): Promise<any> {
     const session = await postgresDB.select().from(paymentSessions)
-      .where(eq(paymentSessions.userId, walletAddress))
-      .orderBy(paymentSessions.createdAt, 'desc')
-      .limit(1);
+      .where(eq(paymentSessions.userId, walletAddress as any))
     if (!session[0]) throw new Error('No active session for wallet');
 
     // Step 6: List Outgoing Payments
-    return this.paymentService.listOutgoingPayments(session[0].accessToken, walletAddress, { first });
+    return this.paymentService.listOutgoingPayments(session[0].accessToken, { first });
   }
 }

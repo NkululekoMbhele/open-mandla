@@ -21,7 +21,8 @@ export const paymentSessions = pgTable('payment_sessions', {
   paymentUrl: text('payment_url'),
   paymentStatus: varchar('payment_status', { length: 50 }).notNull(),
   createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow()
+  updatedAt: timestamp('updated_at').defaultNow(),
+  quoteId: varchar('quote_id'),
 }, (table) => {
   return {
     userIdIdx: uniqueIndex('user_id_idx').on(table.userId),
