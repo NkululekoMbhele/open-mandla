@@ -2,6 +2,7 @@ import express from 'express';
 import { sendSms } from '../communication/providers/SMSProvider';
 import { checkIfUserExists } from '../db';
 import { checkPhoneNumberValidity, createUser } from '../utils/phoneNumber';
+import { handleBalanceCommand } from '../communication/utils';
 
 const router = express.Router();
 
@@ -22,9 +23,9 @@ router.post('/sms', async (req, res) => {
         return;
     }
 
-    const userExists = await checkIfUserExists(from);
-    console.log("Does User Exist:", userExists);
-    if (!userExists){
+    const { exists, userId } = await checkIfUserExists(from);
+    console.log("Does User Exist:", exists);
+    if (!exists || !userId){
         res.send("User does not exist.");
         const userId = createUser(from);
         sendSms(from, 'Hello Mandla User. We see your are new to the ecosystem. Welcome. Your user id is: ' + userId + '. To get started, try command BALANCE to check your balance.');
@@ -40,7 +41,7 @@ router.post('/sms', async (req, res) => {
     // Handle the command
     switch (cmd) {
         case 'balance':
-        handleBalanceCommand();
+        handleBalanceCommand(userId);
         break;
   
         case 'verify':

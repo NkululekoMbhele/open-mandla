@@ -1,7 +1,7 @@
 import { DATABASE_URL } from '../config/database';
 import { drizzle } from 'drizzle-orm/node-postgres';
 
-import { eq } from 'drizzle-orm';
+import { eq, exists } from 'drizzle-orm';
 import { userDataTable } from './schema/users';
 import { userBalancesTable } from './schema/balances';
 
@@ -12,7 +12,7 @@ export const postgresDB = drizzle(DATABASE_URL);
 export async function checkIfUserExists(number: string) {
     const user = await postgresDB.select().from(userDataTable).where(eq(userDataTable.phone_number, number)).limit(1);
   
-    return user.length > 0;  // Returns true if the user exists, false otherwise
+    return { exists: user.length > 0, userId: user.length > 0 ? user[0].user_id : null};  // Returns true if the user exists, false otherwise
 }
 
 
