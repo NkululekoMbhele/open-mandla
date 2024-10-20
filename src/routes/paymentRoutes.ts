@@ -28,7 +28,19 @@ router.get('/wallet/keys', (req, res) => paymentController.getWalletKeys(req, re
 router.post('/grants/incoming-payment', (req, res) => paymentController.requestIncomingPaymentGrant(req, res));
 router.post('/grants/quote', (req, res) => paymentController.requestQuoteGrant(req, res));
 router.post('/grants/outgoing-payment', (req, res) => paymentController.requestOutgoingPaymentGrant(req, res));
-
 router.post('/grants/continue', (req, res) => paymentController.continueGrant(req, res));
+router.post('/grants/revoke', (req, res) => paymentController.revokeGrant(req, res));
+
+// Incoming payment routes
+router.post('/incoming-payments', (req, res) => paymentController.createIncomingPayment(req, res));
+router.get('/incoming-payments', (req, res) => paymentController.listIncomingPayments(req, res));
+router.get('/incoming-payments/:incomingPaymentUrl', (req, res) => paymentController.getIncomingPayment(req, res));
+router.post('/incoming-payments/:incomingPaymentUrl/complete', (req, res) => paymentController.completeIncomingPayment(req, res));
+
+// Outgoing payment routes
+router.post('/outgoing-payments', (req, res) => paymentController.createOutgoingPayment(req, res));
+router.get('/outgoing-payments', (req, res) => paymentController.listOutgoingPayments(req, res));
+router.get('/outgoing-payments/:outgoingPaymentUrl', (req, res) => paymentController.getOutgoingPayment(req, res));
+
 
 export default router;

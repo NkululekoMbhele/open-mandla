@@ -8,6 +8,7 @@ import {
 } from "@interledger/open-payments";
 import NodeCache from 'node-cache';
 import {WalletAddress} from "../../models/WalletModels";
+import {IncomingPaymentPaginationResult} from "@interledger/open-payments/dist/types";
 
 console.log("Hello")
 
@@ -174,6 +175,118 @@ export class PaymentService {
       accessToken: (grant as Grant).access_token.value,
       manageUrl: (grant as Grant).access_token.manage,
     };
+  }
+
+  async revokeGrant(accessToken: string, url: string) {
+    const client = await this.initializeClient();
+
+    await client.grant.cancel({
+      accessToken,
+      url,
+    });
+
+    // If the cancellation is successful, the above call won't throw an error
+    return { message: "Grant successfully revoked" };
+  }
+
+  async createIncomingPayment(accessToken: string, incomingAmount: {
+    value: string;
+    assetCode: string;
+    assetScale: number;
+  }, expiresIn: number = 10) {
+    const client = await this.initializeClient();
+    const walletAddress = await this.getWalletAddress();
+
+    const incomingPayment = await client.incomingPayment.create(
+      {
+        url: new URL(this.walletAddressUrl).origin,
+        accessToken: accessToken,
+      },
+      {
+        walletAddress: this.walletAddressUrl,
+        incomingAmount: incomingAmount,
+        expiresAt: new Date(Date.now() + 60_000 * expiresIn).toISOString(),
+      }
+    );
+
+    return incomingPayment;
+  }
+
+  async listIncomingPayments(accessToken: string, paginationParams: {
+    first?: number;
+    last?: number;
+    cursor?: string;
+  } = {}) {
+    const client = await this.initializeClient();
+    const walletAddress = await this.getWalletAddress();
+
+    const incomingPayments: IncomingPaymentPaginationResult = await client.incomingPayment.list(
+      {
+        url: new URL(this.walletAddressUrl).origin,
+        walletAddress: this.walletAddressUrl,
+        accessToken: accessToken,
+      }
+    );
+
+    return incomingPayments;
+  }
+  async getIncomingPayment(incomingPaymentUrl: string, accessToken: string) {
+    const client = await this.initializeClient();
+
+    const incomingPayment = await client.incomingPayment.get({
+      url: incomingPaymentUrl,
+      accessToken: accessToken,
+    });
+
+    return incomingPayment;
+  }
+
+  async completeIncomingPayment(incomingPaymentUrl: string, accessToken: string) {
+    const client = await this.initializeClient();
+
+    const completedIncomingPayment = await client.incomingPayment.complete({
+      url: incomingPaymentUrl,
+      accessToken: accessToken,
+    });
+
+    return completedIncomingPayment;
+  }
+
+  async createOutgoingPayment(accessToken: string, quoteId: string) {
+    const client = await this.initializeClient();
+    return client.outgoingPayment.create(
+      {
+        url: new URL(this.walletAddressUrl).origin,
+        accessToken: accessToken,
+      },
+      {
+        walletAddress: this.walletAddressUrl,
+        quoteId: quoteId,
+      }
+    );
+  }
+
+  async listOutgoingPayments(accessToken: string, paginationParams: {
+    first?: number;
+    last?: number;
+    cursor?: string;
+  } = {}) {
+    const client = await this.initializeClient();
+    return client.outgoingPayment.list(
+      {
+        url: new URL(this.walletAddressUrl).origin,
+        walletAddress: this.walletAddressUrl,
+        accessToken: accessToken,
+      }
+    );
+  }
+
+  async getOutgoingPayment(outgoingPaymentUrl: string, accessToken: string) {
+    const client = await this.initializeClient();
+    return client.outgoingPayment.get({
+      url: outgoingPaymentUrl,
+      accessToken: accessToken,
+    });
   }
 
 }
