@@ -43,7 +43,8 @@ router.post('/sms', async (req, res) => {
     // Handle the command
     switch (cmd) {
         case 'balance':
-        handleBalanceCommand(userId);
+        const message = await handleBalanceCommand(userId);
+        sendSms(from, message)
         break;
   
         case 'verify':
@@ -57,10 +58,15 @@ router.post('/sms', async (req, res) => {
                 sendSms(from, 'Insufficient parameters for sending assets, follow the format: send#ACCOUNT#ASSET#AMOUNT.');
             }
 
-        const [destAccount, asset, amount] = commandParts.slice(1);
-        // handleSendCommand(destAccount, asset, amount);
-        break;
-  
+
+        case 'help':
+            if (commandParts.length === 1) {
+                sendSms(from, 'What specific command would you like help with?\n - Help Balance\n - Help Send');
+            }
+
+            // handleSendCommand(destAccount, asset, amount);
+            break;
+    
         default:
             // return res.status(400).json({ error: 'Unknown command' });
             break
