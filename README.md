@@ -1,50 +1,57 @@
-# open-mandla
+# Open Mandla
 
+## SMS-Based Payment System Using Open Payments and Interledger
 
-# Wallet Retrieval Endpoint
+Open Mandla is an innovative financial platform that enables users to send and receive payments using simple SMS commands. By leveraging the power of Open Payments and the Interledger Protocol, Open Mandla brings accessible, cross-border financial services to anyone with a mobile phone, regardless of their access to smartphones or internet connectivity.
 
-## Overview
+### Key Features
 
-This document describes the `/api/payment/wallet` endpoint, which is part of our payment system API. This endpoint retrieves the wallet information associated with the configured Interledger account.
+- **SMS-Driven Transactions**: Send money, check balances, and view transaction history using simple SMS commands.
+- **Interledger Integration**: Utilize the Interledger Protocol for fast, secure, and low-cost cross-border transactions.
+- **Open Payments Compatibility**: Seamlessly integrate with the Open Payments ecosystem for standardized payment operations.
+- **User-Friendly Interface**: Simple command structure makes it easy for users of all technical levels to manage their finances.
+- **Multi-Currency Support**: Handle transactions in various currencies, facilitating international remittances.
+- **Transaction History**: Easily retrieve and review past transactions via SMS.
+- **Secure Authentication**: Implement robust security measures to protect user accounts and transactions.
 
-## Endpoint Details
+### How It Works
 
-- **URL**: `http://localhost:3000/api/payment/wallet`
-- **Method**: GET
-- **Authentication**: None (Note: Consider adding authentication for production use)
+1. **User Registration**: New users are automatically registered upon their first interaction with the system.
+2. **Balance Inquiry**: Users can check their balance with a simple SMS command.
+3. **Sending Money**: Initiate transfers using the format: `send#RECIPIENT#ASSET#AMOUNT`.
+4. **Transaction Confirmation**: Multi-step confirmation process ensures transaction accuracy and user intent.
+5. **History Retrieval**: Users can view their transaction history for specific months.
 
-## Response
+### Technical Stack
 
-The endpoint returns a JSON object containing the wallet information. Here's an example of the expected response:
+- Node.js and Express for the backend server
+- Twilio for SMS communication
+- Open Payments API for payment processing
+- Interledger Protocol for cross-border transactions
+- PostgreSQL database for data storage
 
-```json
-{
-  "id": "https://ilp.interledger-test.dev/7aee0ae4",
-  "publicName": "f6e39d59",
-  "assetCode": "EUR",
-  "assetScale": 2,
-  "authServer": "https://auth.interledger-test.dev",
-  "resourceServer": "https://ilp.interledger-test.dev"
-}
-```
+### Getting Started
 
-### Response Fields
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set up environment variables (WALLET_ADDRESS, OPEN_PRIVATE_KEY, KEY_ID, etc.)
+4. Run the server: `npm start`
 
-- `id`: The unique identifier for the wallet address.
-- `publicName`: A public name or identifier for the wallet.
-- `assetCode`: The currency code of the asset associated with this wallet (e.g., "EUR" for Euro).
-- `assetScale`: The scale of the asset (e.g., 2 for cents in Euro).
-- `authServer`: The URL of the authentication server.
-- `resourceServer`: The URL of the resource server.
+### Future Enhancements
 
-## Usage
+- WhatsApp integration for expanded reach
+- AI-driven financial advice and alerts
+- Integration with additional payment networks
+- Enhanced security features like two-factor authentication
 
-To retrieve the wallet information, send a GET request to the endpoint:
+### Contributing
 
-```bash
-curl http://localhost:3000/api/payment/wallet
-```
+We welcome contributions to Open Mandla! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines on how to get involved.
 
-## Error Handling
+### License
 
-If there's an error retrieving the wallet information, the API will return a 500 status code with an error message in the response body.
+Open Mandla is open-source software licensed under the MIT license.
+
+---
+
+Open Mandla - Empowering Financial Inclusion Through Simple Technology

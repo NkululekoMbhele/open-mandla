@@ -165,7 +165,7 @@ private async initializeClient(): Promise<AuthenticatedClient> {
           start: ["redirect"],
           finish: {
             method: "redirect",
-            uri: "http://localhost:3000/api/payment/grants/redirect",
+            uri: "https://d14c-137-158-176-252.ngrok-free.app/chatbot/redirect",
             nonce,
           },
         },
