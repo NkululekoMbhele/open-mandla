@@ -34,7 +34,7 @@ export class IncomingPaymentManager {
     const session = await postgresDB.select().from(paymentSessions).where(eq(paymentSessions.id, sessionId)).limit(1);
     if (!session[0]) throw new Error('Session not found');
 
-    const encodedUrl = encodeURIComponent(session[0].paymentUrl);
+    const encodedUrl = encodeURIComponent(session[0].paymentUrl as string);
     const paymentDetails = await this.paymentService.getIncomingPayment(encodedUrl, session[0].accessToken);
 
     return paymentDetails;
@@ -44,7 +44,7 @@ export class IncomingPaymentManager {
     const session = await postgresDB.select().from(paymentSessions).where(eq(paymentSessions.id, sessionId)).limit(1);
     if (!session[0]) throw new Error('Session not found');
 
-    const encodedUrl = encodeURIComponent(session[0].paymentUrl);
+    const encodedUrl = encodeURIComponent(session[0].paymentUrl as string);
     const completedPayment = await this.paymentService.completeIncomingPayment(encodedUrl, session[0].accessToken);
 
     // Update session status

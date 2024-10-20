@@ -8,12 +8,13 @@ import {
 } from 'drizzle-orm/pg-core';
 import { InferModel } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
+import {userDataTable} from "./users";
 
 export const paymentSessions = pgTable('payment_sessions', {
   id: serial('id').primaryKey(),
   userId: varchar('user_id', { length: 255 })
     .notNull()
-    .references(() => userDetails.userId),
+    .references(() => userDataTable.user_id),
   accessToken: text('access_token').notNull(),
   refreshToken: text('refresh_token'),
   tokenExpiresAt: timestamp('token_expires_at').notNull(),
