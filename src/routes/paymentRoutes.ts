@@ -18,7 +18,6 @@ const paymentService = new PaymentService(
 );
 const paymentController = new PaymentController(paymentService);
 
-console.log(paymentService)
 
 // Wallet Routes
 router.get('/wallet', (req, res) => paymentController.getWallet(req, res));

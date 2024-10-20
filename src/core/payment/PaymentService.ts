@@ -10,8 +10,6 @@ import NodeCache from 'node-cache';
 import {WalletAddress} from "../../models/WalletModels";
 import {IncomingPaymentPaginationResult} from "@interledger/open-payments/dist/types";
 
-console.log("Hello")
-
 export class PaymentService {
   private client: AuthenticatedClient | null = null;
   private cache: NodeCache;

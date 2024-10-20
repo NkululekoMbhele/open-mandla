@@ -40,7 +40,7 @@ router.post('/sms', async (req, res) => {
     // Handle the command
     switch (cmd) {
         case 'balance':
-        handleBalanceCommand();
+        //handleBalanceCommand();
         break;
   
         case 'verify':

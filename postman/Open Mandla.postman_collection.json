@@ -178,16 +178,13 @@
 			"name": "Outgoing Payment Flow",
 			"item": [
 				{
-					"name": "Incoming Grant",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
+					"name": "Request Outgoing Payment Grant",
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"walletAddress\": \"https://ilp.interledger-test.dev/7aee0ae4\"\r\n}",
+							"raw": "{\n  \"walletAddress\": \"your_wallet_address_here\",\n  \"debitAmount\": \"100.00\",\n  \"receiveAmount\": \"95.00\",\n  \"nonce\": \"uniqueRandomString123\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -195,7 +192,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/payment/grants/incoming-payment",
+							"raw": "http://localhost:3000/api/payment/grants/outgoing-payment",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -205,20 +202,20 @@
 								"api",
 								"payment",
 								"grants",
-								"incoming-payment"
+								"outgoing-payment"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Create Incoming Payment",
+					"name": "Continue Grant",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"accessToken\": \"000E61F663FE1FF0A255\",\r\n  \"incomingAmount\": {\r\n    \"value\": \"400\",\r\n    \"assetCode\": \"EUR\",\r\n    \"assetScale\": 2\r\n  },\r\n  \"expiresIn\": 10\r\n}",
+							"raw": "{\n  \"continueAccessToken\": \"continue_token_from_step_1\",\n  \"continueUri\": \"continue_uri_from_step_1\",\n  \"interactRef\": \"simulated_interaction_reference\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -226,7 +223,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/payment/incoming-payments",
+							"raw": "http://localhost:3000/api/payment/grants/continue",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -235,87 +232,21 @@
 							"path": [
 								"api",
 								"payment",
-								"incoming-payments"
+								"grants",
+								"continue"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Get Incoming Payment Details",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"accessToken\": \"your_access_token_from_step_1\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/payment/incoming-payments/{incoming_payment_url_from_step_2}",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"payment",
-								"incoming-payments",
-								"{incoming_payment_url_from_step_2}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "List Payments",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"accessToken\": \"F9045E6EB0C709C63B84\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/payment/incoming-payments",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"payment",
-								"incoming-payments"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Complete",
+					"name": "Create a Quote",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"accessToken\": \"7ABCE4270651E123B375\"\r\n}",
+							"raw": "{\n  \"accessToken\": \"{{accessToken}}\",\n  \"walletAddress\": \"your_wallet_address_here\",\n  \"receiveAmount\": {\n    \"value\": \"9500\",\n    \"assetCode\": \"USD\",\n    \"assetScale\": 2\n  },\n  \"receiver\": \"https://wallet.example/alice\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -323,7 +254,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/payment/incoming-payments/https%3A%2F%2Filp.interledger-test.dev%2Fincoming-payments%2F32e8aaa9-81b3-47bd-b0ce-ca37d5fb9bc7/complete",
+							"raw": "http://localhost:3000/api/payment/quotes",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -332,9 +263,104 @@
 							"path": [
 								"api",
 								"payment",
-								"incoming-payments",
-								"https%3A%2F%2Filp.interledger-test.dev%2Fincoming-payments%2F32e8aaa9-81b3-47bd-b0ce-ca37d5fb9bc7",
-								"complete"
+								"quotes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Outgoing Payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accessToken\": \"{{accessToken}}\",\n  \"walletAddress\": \"your_wallet_address_here\",\n  \"quoteId\": \"quote_url_from_step_3\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/payment/outgoing-payments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"payment",
+								"outgoing-payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Outgoing Payment Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accessToken\": \"{{accessToken}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/payment/outgoing-payments/{outgoing_payment_url_from_step_4}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"payment",
+								"outgoing-payments",
+								"{outgoing_payment_url_from_step_4}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Outgoing Payments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accessToken\": \"{{accessToken}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/payment/outgoing-payments?first=10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"payment",
+								"outgoing-payments"
+							],
+							"query": [
+								{
+									"key": "first",
+									"value": "10"
+								}
 							]
 						}
 					},
