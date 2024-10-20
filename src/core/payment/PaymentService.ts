@@ -4,17 +4,26 @@ import {
   AuthenticatedClient,
   isPendingGrant,
   Grant,
-  GrantContinuation, PendingGrant
+  GrantContinuation,
+  PendingGrant,
 } from "@interledger/open-payments";
+
 import NodeCache from 'node-cache';
-import {WalletAddress} from "../../models/WalletModels";
 import {IncomingPaymentPaginationResult} from "@interledger/open-payments/dist/types";
 
 export class PaymentService {
   private client: AuthenticatedClient | null = null;
   private cache: NodeCache;
 
-  constructor(
+/*************  ✨ Codeium Command ⭐  *************/
+/**
+ * Constructs a new instance of PaymentService.
+ * 
+ * @param walletAddressUrl - The URL of the wallet address.
+ * @param privateKey - The private key used for authentication.
+ * @param keyId - The identifier for the key being used.
+ */
+/******  4df6e052-8d61-4f94-9fa8-1a2e2b85fb42  *******/  constructor(
     private walletAddressUrl: string,
     private privateKey: string,
     private keyId: string
@@ -22,17 +31,17 @@ export class PaymentService {
     this.cache = new NodeCache({stdTTL: 600}); // Cache for 10 minutes
   }
 
-  private async initializeClient(): Promise<AuthenticatedClient> {
-    if (!this.client) {
-      this.client = await createAuthenticatedClient({
-        walletAddressUrl: this.walletAddressUrl,
-        privateKey: this.privateKey,
-        keyId: this.keyId,
-      });
-    }
-    console.log("Hello")
-    return this.client;
+private async initializeClient(): Promise<AuthenticatedClient> {
+  if (!this.client) {
+    this.client = await createAuthenticatedClient({
+      walletAddressUrl: this.walletAddressUrl,
+      privateKey: this.privateKey,
+      keyId: this.keyId,
+    });
   }
+  console.log("Hello")
+  return this.client;
+}
 
   async getWalletAddress(): Promise<{
     id: string;
