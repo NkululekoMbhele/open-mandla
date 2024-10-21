@@ -77,6 +77,8 @@ router.post('/sms', async (req, res) => {
     cmd = menuOptions[parseInt(cmd) - 1];
   }
 
+  console.log("TEST")
+
   try {
     switch (cmd) {
       case 'menu':
@@ -120,15 +122,14 @@ router.post('/sms', async (req, res) => {
         break;
 
       default:
+        console.log("Hello")
         sendSms(from, `Unknown command: "${cmd}". Reply with MENU to see all options or HELP for assistance.`);
+        break;
     }
   } catch (error) {
     console.error(`Error processing command "${cmd}":`, error);
     sendSms(from, 'An error occurred. Please try again or reply with MENU for options.');
   }
-
-  const responseString = 'SMS - Let us post |' + command + "|" + from + `\n${JSON.stringify(req.body)}`
-  res.send(responseString);
 });
 
 async function handleHistoryCommand(from: string, userId: string, commandParts: string[]) {

@@ -7,8 +7,8 @@ const { accountSid, authToken, from } = {
     from: String(process.env.TWILIO_PHONE_NUMBER),
 };
 
-// console.log("authToken", authToken)
-// console.log("accountSid", accountSid)
+console.log("authToken", authToken)
+console.log("accountSid", accountSid)
 
 const client = require('twilio')(accountSid, authToken);
 const HOST_NUMBER = String(process.env.TWILIO_PHONE_NUMBER);
@@ -20,6 +20,7 @@ export const sendSms = (sender: string, message: string) => client.messages
     from: from, // From a valid Twilio number
   })
   .then((message: any) => console.log(message.sid));
+
 
 // export const sendSms = (sender: string, message: string) => "HB"
 //   .then((message: any) => console.log(message.sid));
